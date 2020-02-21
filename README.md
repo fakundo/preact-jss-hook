@@ -70,7 +70,7 @@ export default () => {
 }
 ```
 
-Using decorator
+Using HOC decorator
 
 ```javascript
 import { createWithStyles } from 'preact-jss-hook'
@@ -103,6 +103,10 @@ export default class SuperComponent extends Component {
 - `createWithStyles(styles, { createUseStyles,  compNameMeta = true, ...sheetOptions })`
 
 - `withStyles({ withTheme = false, ...sheetOptions })`
+
+- `useTheme()` - hook
+
+- `withTheme()` - HOC decorator
 
 - `ThemeProvider`
 
