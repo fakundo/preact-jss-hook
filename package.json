@@ -1,6 +1,6 @@
 {
   "name": "preact-jss-hook",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "JSS integration with Preact",
   "main": "lib/index.js",
   "files": [

@@ -26,10 +26,6 @@ const handleComponentRender = ({ storage, derivedStyles, theme, sheetOptions }) 
     const styles = typeof derivedStyles === 'function' ? derivedStyles(theme) : derivedStyles
     storage.sheet = jss.createStyleSheet(styles, sheetOptions)
   }
-
-  if (!storage.sheet.attached) {
-    storage.sheet.attach()
-  }
 }
 
 const handleComponentMount = ({ storage, key }) => {
