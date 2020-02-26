@@ -7,38 +7,35 @@ const isEmptyObject = (obj) => (
   !Object.keys(obj).length
 )
 
-const handleComponentRender = ({ storage, derivedStyles, theme, sheetOptions }) => {
-  if (isEmptyObject(storage)) {
-    storage.mountedComponents = {}
-    storage.theme = theme
-    storage.sheet = null
-  }
-
-  if (storage.theme !== theme && typeof derivedStyles === 'function') {
-    if (storage.sheet) {
-      jss.removeStyleSheet(storage.sheet)
-      storage.sheet = null
-    }
-    storage.theme = theme
-  }
-
-  if (!storage.sheet) {
+class StorageItem {
+  constructor(derivedStyles, sheetOptions, theme) {
     const styles = typeof derivedStyles === 'function' ? derivedStyles(theme) : derivedStyles
-    storage.sheet = jss.createStyleSheet(styles, sheetOptions)
+    this.sheet = jss.createStyleSheet(styles, sheetOptions)
+    this.mountedComponents = {}
   }
-}
 
-const handleComponentMount = ({ storage, key }) => {
-  storage.mountedComponents[key] = true
-  if (!storage.sheet.attached) {
-    storage.sheet.attach()
+  addComp(key) {
+    this.mountedComponents[key] = true
   }
-}
 
-const handleComponentUnmount = ({ storage, key }) => {
-  delete storage.mountedComponents[key]
-  if (isEmptyObject(storage.mountedComponents) && storage.sheet) {
-    storage.sheet.detach()
+  removeComp(key) {
+    delete this.mountedComponents[key]
+  }
+
+  attachSheet() {
+    this.sheet.attach()
+  }
+
+  destroySheet() {
+    jss.removeStyleSheet(this.sheet)
+  }
+
+  hasMountedComponents() {
+    return !isEmptyObject(this.mountedComponents)
+  }
+
+  getClasses() {
+    return this.sheet.classes
   }
 }
 
@@ -46,7 +43,7 @@ let globalIndex = 1
 
 export default (derivedStyles, derivedCreationOptions = {}) => {
   const index = globalIndex++
-  const creationOptions = { storage: {}, ...derivedCreationOptions }
+  const creationOptions = { storage: new WeakMap(), ...derivedCreationOptions }
 
   return (adhocOptions) => {
     const theme = useContext(ThemeContext)
@@ -58,14 +55,30 @@ export default (derivedStyles, derivedCreationOptions = {}) => {
       ...adhocOptions,
     }), [creationOptions, adhocOptions])
 
-    handleComponentRender({ storage, derivedStyles, theme, sheetOptions })
+    const storageItem = useMemo(() => {
+      const exItem = storage.get(theme)
+
+      if (exItem) {
+        return exItem
+      }
+
+      const newItem = new StorageItem(derivedStyles, sheetOptions, theme)
+      storage.set(theme, newItem)
+      return newItem
+    }, [theme])
 
     useLayoutEffect(() => {
-      handleComponentMount({ storage, key })
-      return () => handleComponentUnmount({ storage, key })
-    }, [storage])
+      storageItem.addComp(key)
+      storageItem.attachSheet()
+      return () => {
+        storageItem.removeComp(key)
+        if (!storageItem.hasMountedComponents()) {
+          storageItem.destroySheet()
+          storage.delete(theme)
+        }
+      }
+    }, [theme])
 
-    const { classes } = storage.sheet
-    return { classes, theme }
+    return { theme, classes: storageItem.getClasses() }
   }
 }

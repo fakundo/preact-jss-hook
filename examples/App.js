@@ -17,31 +17,54 @@ const theme = {
   errorColor: 'red',
 }
 
+const theme2 = {
+  primaryColor: 'purple',
+  secondaryColor: 'blue',
+  errorColor: 'red',
+}
+
 export default () => {
   const [visible, setVisibility] = useState(false)
   const toggleHidden = useCallback(() => setVisibility((oldVisible) => !oldVisible))
   return (
-    <ThemeProvider theme={theme}>
-      <DecoratedFunctionalComponent />
-      <hr />
-      <button onClick={toggleHidden} type="button">toggle visibility</button>
-      { !!visible && (
-        <Fragment>
-          <hr />
-          <DecoratedClassComponent />
-          <DecoratedFunctionalComponent />
-          <HookedComponent />
-        </Fragment>
-      ) }
-      <hr />
-      <div>
+    <Fragment>
+      <ThemeProvider theme={theme}>
+        <DecoratedFunctionalComponent />
+        <hr />
+        <button onClick={toggleHidden} type="button">toggle visibility</button>
+
         { !!visible && (
-          <Button>button1</Button>
+          <Fragment>
+            <hr />
+            <DecoratedClassComponent />
+            <DecoratedFunctionalComponent />
+            <HookedComponent />
+          </Fragment>
         ) }
-        { !visible && (
-          <Button>button2</Button>
-        ) }
-      </div>
-    </ThemeProvider>
+
+        <hr />
+
+        <div>
+          { !!visible && (
+            <Button>button1</Button>
+          ) }
+          { !visible && (
+            <Button>button2</Button>
+          ) }
+        </div>
+      </ThemeProvider>
+
+      <hr />
+
+      <ThemeProvider theme={theme}>
+        <Button>theme 1</Button>
+      </ThemeProvider>
+
+      {!!visible && (
+        <ThemeProvider theme={theme2}>
+          <Button>theme 2</Button>
+        </ThemeProvider>
+      )}
+    </Fragment>
   )
 }
