@@ -7,6 +7,7 @@ import { ThemeProvider } from '../src'
 import DecoratedClassComponent from './DecoratedClassComponent'
 import DecoratedFunctionalComponent from './DecoratedFunctionalComponent'
 import HookedComponent from './HookedComponent'
+import WithoutThemeComponent from './WithoutThemeComponent'
 import Button from './Button'
 
 jss.setup(preset())
@@ -28,6 +29,7 @@ export default () => {
   const toggleHidden = useCallback(() => setVisibility((oldVisible) => !oldVisible))
   return (
     <Fragment>
+      <WithoutThemeComponent />
       <ThemeProvider theme={theme}>
         <DecoratedFunctionalComponent />
         <hr />

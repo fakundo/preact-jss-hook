@@ -3,13 +3,17 @@ import { useContext, useLayoutEffect, useState, useMemo } from 'preact/hooks'
 import jss from 'jss'
 import ThemeContext from './ThemeContext'
 
+const isFunction = (obj) => (
+  typeof obj === 'function'
+)
+
 const isEmptyObject = (obj) => (
   !Object.keys(obj).length
 )
 
 class StorageItem {
   constructor(derivedStyles, sheetOptions, theme) {
-    const styles = typeof derivedStyles === 'function' ? derivedStyles(theme) : derivedStyles
+    const styles = isFunction(derivedStyles) ? derivedStyles(theme) : derivedStyles
     this.sheet = jss.createStyleSheet(styles, sheetOptions)
     this.mountedComponents = {}
   }
@@ -41,12 +45,14 @@ class StorageItem {
 
 let globalIndex = 1
 
+const dumbTheme = {}
+
 export default (derivedStyles, derivedCreationOptions = {}) => {
   const index = globalIndex++
   const creationOptions = { storage: new WeakMap(), ...derivedCreationOptions }
 
   return (adhocOptions) => {
-    const theme = useContext(ThemeContext)
+    const theme = isFunction(derivedStyles) ? useContext(ThemeContext) : dumbTheme
     const [key] = useState(() => Math.random())
 
     const { storage, ...sheetOptions } = useMemo(() => ({
