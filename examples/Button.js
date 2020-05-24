@@ -3,7 +3,7 @@ import { h } from 'preact'
 import { createUseStyles } from '../src'
 
 const useStyles = createUseStyles((theme) => ({
-  root: {
+  button: {
     background: theme.primaryColor,
     border: '3px solid red',
     outline: 0,
@@ -18,7 +18,7 @@ const useStyles = createUseStyles((theme) => ({
 export default function Button({ children }) {
   const { classes } = useStyles()
   return (
-    <button type="button" className={classes.root}>
+    <button type="button" className={classes.button}>
       { children }
     </button>
   )

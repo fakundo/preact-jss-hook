@@ -4,16 +4,19 @@ import defaultCreateUseStyles from './createUseStyles'
 
 export default (derivedStyles, {
   createUseStyles = defaultCreateUseStyles,
-  compNameMeta = true,
-  ...creationOptions
+  ...derivedOptions
 } = {}) => {
-  const useStyles = createUseStyles(derivedStyles, creationOptions)
+  const useStyles = createUseStyles(derivedStyles)
 
-  return ({ withTheme = false, ...adhocOptions } = {}) => (
+  return ({
+    withTheme = false,
+    ...adhocOptions
+  } = {}) => (
     (component) => (
       forwardRef((ownProps, ref) => {
         const { classes, theme } = useStyles({
-          meta: (compNameMeta && component.name) || '',
+          meta: component.name || '',
+          ...derivedOptions,
           ...adhocOptions,
         })
 

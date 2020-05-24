@@ -3,7 +3,7 @@ import { h } from 'preact'
 import { createUseStyles } from '../src'
 
 const useStyles = createUseStyles((theme) => ({
-  root: {
+  hookedComp: {
     color: theme.errorColor,
   },
 }))
@@ -11,7 +11,7 @@ const useStyles = createUseStyles((theme) => ({
 export default function HookedComponent() {
   const { classes } = useStyles()
   return (
-    <div className={classes.root}>
+    <div className={classes.hookedComp}>
       HookedComponent
     </div>
   )

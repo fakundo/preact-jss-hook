@@ -1,7 +1,6 @@
 /* eslint-disable no-param-reassign */
 import { useContext, useLayoutEffect, useState, useMemo } from 'preact/hooks'
-import jss from 'jss'
-import ThemeContext from './ThemeContext'
+import JssContext from './JssContext'
 
 const isFunction = (obj) => (
   typeof obj === 'function'
@@ -12,17 +11,18 @@ const isEmptyObject = (obj) => (
 )
 
 class StorageItem {
-  constructor(derivedStyles, sheetOptions, theme) {
+  constructor(derivedStyles, sheetOptions, jss, theme) {
     const styles = isFunction(derivedStyles) ? derivedStyles(theme) : derivedStyles
     this.sheet = jss.createStyleSheet(styles, sheetOptions)
     this.mountedComponents = {}
+    this.jss = jss
   }
 
-  addComp(key) {
+  registerComponent(key) {
     this.mountedComponents[key] = true
   }
 
-  removeComp(key) {
+  unregisterComponent(key) {
     delete this.mountedComponents[key]
   }
 
@@ -30,8 +30,12 @@ class StorageItem {
     this.sheet.attach()
   }
 
+  detachSheet() {
+    this.sheet.detach()
+  }
+
   destroySheet() {
-    jss.removeStyleSheet(this.sheet)
+    this.jss.removeStyleSheet(this.sheet)
   }
 
   hasMountedComponents() {
@@ -43,48 +47,55 @@ class StorageItem {
   }
 }
 
-let globalIndex = 1
+let globalIndex = -1e9
 
-const dumbTheme = {}
-
-export default (derivedStyles, derivedCreationOptions = {}) => {
-  const index = globalIndex++
-  const creationOptions = { storage: new WeakMap(), ...derivedCreationOptions }
+export default (derivedStyles, derivedOptions = {}) => {
+  const options = {
+    purgeUnused: true,
+    index: globalIndex++,
+    storage: new WeakMap(),
+    ...derivedOptions,
+  }
 
   return (adhocOptions) => {
-    const theme = isFunction(derivedStyles) ? useContext(ThemeContext) : dumbTheme
+    const contextValue = useContext(JssContext)
     const [key] = useState(() => Math.random())
 
-    const { storage, ...sheetOptions } = useMemo(() => ({
-      index,
-      ...creationOptions,
+    const { storage, purgeUnused, ...sheetOptions } = useMemo(() => ({
+      ...options,
       ...adhocOptions,
-    }), [creationOptions, adhocOptions])
+    }), [options, adhocOptions])
 
     const storageItem = useMemo(() => {
-      const exItem = storage.get(theme)
+      const existingItem = storage.get(contextValue)
 
-      if (exItem) {
-        return exItem
+      if (existingItem) {
+        return existingItem
       }
 
-      const newItem = new StorageItem(derivedStyles, sheetOptions, theme)
-      storage.set(theme, newItem)
+      const { jss, theme } = contextValue
+      const newItem = new StorageItem(derivedStyles, sheetOptions, jss, theme)
+      storage.set(contextValue, newItem)
       return newItem
-    }, [theme])
+    }, [contextValue, storage])
 
-    useLayoutEffect(() => {
-      storageItem.addComp(key)
-      storageItem.attachSheet()
-      return () => {
-        storageItem.removeComp(key)
-        if (!storageItem.hasMountedComponents()) {
+    storageItem.registerComponent(key)
+    storageItem.attachSheet()
+
+    useLayoutEffect(() => () => {
+      storageItem.unregisterComponent(key)
+      if (!storageItem.hasMountedComponents()) {
+        storageItem.detachSheet()
+        if (purgeUnused) {
           storageItem.destroySheet()
-          storage.delete(theme)
+          storage.delete(contextValue)
         }
       }
-    }, [theme])
+    }, [contextValue, storage, storageItem, purgeUnused])
 
-    return { theme, classes: storageItem.getClasses() }
+    return {
+      theme: contextValue.theme,
+      classes: storageItem.getClasses(),
+    }
   }
 }

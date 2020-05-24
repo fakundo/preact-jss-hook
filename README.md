@@ -33,19 +33,25 @@ export default () => {
 }
 ```
 
-Theme provider
+JSS provider
 
 ```javascript
-import { ThemeProvider } from 'preact-jss-hook'
+import { JssProvider } from 'preact-jss-hook'
+import { create } from 'jss'
+
+const jss = create()
 
 const theme = {
   primaryColor: 'red'
 }
 
 export default () => (
-  <ThemeProvider theme={theme}>
+  <JssProvider 
+    jss={jss} // optional
+    theme={theme} // optional
+  >
     Children
-  </ThemeProvider>
+  </JssProvider>
 )
 ```
 
@@ -61,7 +67,7 @@ const useStyles = createUseStyles((theme) => ({
 }))
 
 export default () => {
-  const { classes } = useStyles()
+  const { classes, theme } = useStyles()
   return (
     <div className={classes.root}>
       Red block
@@ -96,21 +102,26 @@ export default class SuperComponent extends Component {
 
 ## API
 
-- `createUseStyles(styles, sheetOptions)`
+- `createUseStyles(styles, hookOptions)` - hook creator
 
-- `useStyles(sheetOptions)`
+- `useStyles(hookOptions)` - hook
 
-- `createWithStyles(styles, { createUseStyles,  compNameMeta = true, ...sheetOptions })`
+- `createWithStyles(styles, decoratorOptions)` - decorator creator
 
-- `withStyles({ withTheme = false, ...sheetOptions })`
+- `withStyles(decoratorOptions)` - decorator
 
 - `useTheme()` - hook
 
-- `withTheme()` - HOC decorator
+- `withTheme()` - decorator
 
-- `ThemeProvider`
+- `hookOptions = { purgeUnused = true, ...jssSheetOptions }` 
 
-#### `ThemeProvider` props
+- `decoratorOptions = { withTheme = false, ...hookOptions }`
+
+- `JssProvider`
+
+#### `JssProvider` props
 
 - `children`
-- `theme`
+- `jss` - global jss by default
+- `theme` - empty object by default

@@ -1,16 +1,17 @@
 /** @jsx h */
-import jss from 'jss'
+import { create as createJss } from 'jss'
 import preset from 'jss-preset-default'
 import { h, Fragment } from 'preact'
 import { useState, useCallback } from 'preact/hooks'
-import { ThemeProvider } from '../src'
+import { JssProvider } from '../src'
 import DecoratedClassComponent from './DecoratedClassComponent'
 import DecoratedFunctionalComponent from './DecoratedFunctionalComponent'
 import HookedComponent from './HookedComponent'
 import WithoutThemeComponent from './WithoutThemeComponent'
 import Button from './Button'
+import NestedTest from './NestedTest'
 
-jss.setup(preset())
+const jss = createJss().setup(preset())
 
 const theme = {
   primaryColor: 'green',
@@ -26,14 +27,14 @@ const theme2 = {
 
 export default () => {
   const [visible, setVisibility] = useState(false)
-  const toggleHidden = useCallback(() => setVisibility((oldVisible) => !oldVisible))
+  const toggleVisibility = useCallback(() => setVisibility((oldVisible) => !oldVisible))
   return (
     <Fragment>
       <WithoutThemeComponent />
-      <ThemeProvider theme={theme}>
+      <JssProvider theme={theme}>
         <DecoratedFunctionalComponent />
         <hr />
-        <button onClick={toggleHidden} type="button">toggle visibility</button>
+        <button onClick={toggleVisibility} type="button">toggle visibility</button>
 
         { !!visible && (
           <Fragment>
@@ -54,19 +55,27 @@ export default () => {
             <Button>button2</Button>
           ) }
         </div>
-      </ThemeProvider>
+      </JssProvider>
 
       <hr />
 
-      <ThemeProvider theme={theme}>
+      <JssProvider theme={theme} jss={jss}>
         <Button>theme 1</Button>
-      </ThemeProvider>
+      </JssProvider>
 
       {!!visible && (
-        <ThemeProvider theme={theme2}>
+        <JssProvider theme={theme2} jss={jss}>
           <Button>theme 2</Button>
-        </ThemeProvider>
+        </JssProvider>
       )}
+
+      <hr />
+      <JssProvider jss={jss}>
+        <NestedTest />
+      </JssProvider>
+
+      <hr />
+      <NestedTest />
     </Fragment>
   )
 }

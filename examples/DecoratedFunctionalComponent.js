@@ -3,14 +3,14 @@ import { h } from 'preact'
 import { createWithStyles } from '../src'
 
 const withStyles = createWithStyles((theme) => ({
-  root: {
+  decoratedFuncComp: {
     color: theme.secondaryColor,
   },
 }))
 
 function DecoratedFunctionalComponent({ classes }) {
   return (
-    <div className={classes.root}>
+    <div className={classes.decoratedFuncComp}>
       DecoratedFunctionalComponent
     </div>
   )

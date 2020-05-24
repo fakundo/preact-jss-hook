@@ -1,7 +1,7 @@
 import { useContext } from 'preact/hooks'
-import ThemeContext from './ThemeContext'
+import JssContext from './JssContext'
 
 export default () => {
-  const theme = useContext(ThemeContext)
+  const { theme } = useContext(JssContext)
   return theme
 }

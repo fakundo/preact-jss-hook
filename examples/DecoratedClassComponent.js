@@ -3,7 +3,7 @@ import { h, Component } from 'preact'
 import { createWithStyles } from '../src'
 
 const withStyles = createWithStyles((theme) => ({
-  root: {
+  decoratedClassComp: {
     color: theme.primaryColor,
   },
 }))
@@ -13,7 +13,7 @@ export default class DecoratedClassComponent extends Component {
   render() {
     const { classes } = this.props
     return (
-      <div className={classes.root}>
+      <div className={classes.decoratedClassComp}>
         DecoratedClassComponent
       </div>
     )
