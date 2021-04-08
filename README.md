@@ -4,17 +4,17 @@
 
 JSS integration with Preact.
 
-## Installation
+### Installation
   
 ```
 npm i preact-jss-hook
 ```
 
-## Usage
+### Usage
 
-Basic example
+Basic Example
 
-```javascript
+```js
 import { createUseStyles } from 'preact-jss-hook'
 
 const useStyles = createUseStyles({
@@ -33,9 +33,9 @@ export default () => {
 }
 ```
 
-JSS provider
+JSS Provider
 
-```javascript
+```js
 import { JssProvider } from 'preact-jss-hook'
 import { create } from 'jss'
 
@@ -55,9 +55,9 @@ export default () => (
 )
 ```
 
-Using theme
+Using Theme
 
-```javascript
+```js
 import { createUseStyles } from 'preact-jss-hook'
 
 const useStyles = createUseStyles((theme) => ({
@@ -76,9 +76,9 @@ export default () => {
 }
 ```
 
-Using HOC decorator
+Using HOC
 
-```javascript
+```js
 import { createWithStyles } from 'preact-jss-hook'
 
 const withStyles = createWithStyles((theme) => ({
@@ -87,20 +87,16 @@ const withStyles = createWithStyles((theme) => ({
   }
 }))
 
-@withStyles({ withTheme: true })
-export default class SuperComponent extends Component {
-  render() {
-    const { classes, theme } = this.props
-    return (
-      <div className={classes.root}>
-        Red block
-      </div>
-    )
-  }
-}
+const SuperComponent = ({ classes, theme }) => (
+  <div className={classes.root}>
+    Red block
+  </div>
+)
+
+export default withStyles({ withTheme: true })(SuperComponent)
 ```
 
-## API
+### API
 
 - `createUseStyles(styles, hookOptions)` - hook creator
 
@@ -120,7 +116,7 @@ export default class SuperComponent extends Component {
 
 - `JssProvider`
 
-#### `JssProvider` props
+`JssProvider` props
 
 - `children`
 - `jss` - global jss by default

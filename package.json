@@ -11,8 +11,8 @@
     "lint": "eslint src && eslint examples",
     "clean": "rimraf lib",
     "compile": "microbundle -i src -o lib/index.js -f cjs --no-sourcemap",
-    "build": "npm run clean && npm run compile",
-    "prepublishOnly": "npm run lint && npm run build"
+    "build": "yarn run clean && yarn run compile",
+    "prepublishOnly": "yarn run lint && yarn run build"
   },
   "keywords": [
     "preact",
